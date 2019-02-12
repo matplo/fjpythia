@@ -78,7 +78,7 @@ fastjet_contrib_tgz="fjcontrib-${fastjet_contrib_version}.tar.gz"
 cd ${fastjet_directory_src}
 if [ ! -e ${fastjet_contrib_tgz} ]; then
         echo "downloading fj conributed algorithms..."
-        wget http://fastjet.hepforge.org/contrib/downloads/${fastjet_contrib_tgz}
+        ${wget_command} http://fastjet.hepforge.org/contrib/downloads/${fastjet_contrib_tgz}
 fi
 
 if [ -d ${fastjet_contrib_src_dir} ]; then
