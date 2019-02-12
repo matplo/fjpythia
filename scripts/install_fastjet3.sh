@@ -27,6 +27,10 @@ function thisdir()
         echo $THISDIR
 }
 
+wget_command=wget
+[ -z $(which wget) ] && wget_command="curl -O"
+echo "wget command is: ${wget_command}"
+
 this_file_directory=`thisdir`
 echo ${this_file_directory}
 
@@ -42,7 +46,7 @@ fastjet_tgz="fastjet-${fastjet_version}.tar.gz"
 
 if [ ! -e ${fastjet_tgz} ]; then
         echo "downloading fj..."
-        wget http://fastjet.fr/repo/${fastjet_tgz}
+        ${wget_command} http://fastjet.fr/repo/${fastjet_tgz}
 fi
 
 if [ -d ${fastjet_src_dir} ]; then

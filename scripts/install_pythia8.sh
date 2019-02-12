@@ -27,6 +27,10 @@ function thisdir()
         echo $THISDIR
 }
 
+wget_command=wget
+[ -z $(which wget) ] && wget_command="curl -O"
+echo "wget command is: ${wget_command}"
+
 this_file_directory=`thisdir`
 echo ${this_file_directory}
 
@@ -52,7 +56,7 @@ fi
 pythia_installation_directory="${this_file_directory}/../external/pythia-${pythia_version}"
 if [ -d ${pythia_src_dir} ]; then
         cd ${pythia_src_dir}
-        source ${this_file_directory}/fastjet_setup.sh
+        source ${this_file_directory}/fastjet3_setup.sh
         source ${this_file_directory}/root6_setup.sh
         [ -d ${FASTJETDIR} ] && fjsetup="--with-fastjet3=${FASTJETDIR}"
         [ -d ${ROOT6DIR} ] && root6setup="--with-root=${ROOT6DIR}"
