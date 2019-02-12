@@ -1,0 +1,6 @@
+/build
+/install
+/downloads
+/external
+/scripts/fastjet3_setup.sh
+/scripts/pythia8_setup.sh
