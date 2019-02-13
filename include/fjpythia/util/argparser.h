@@ -23,6 +23,9 @@ namespace FJPyUtil
 					this->tokens.push_back(std::string(argv[i]));
 			}
 
+			void addOpts(const char *what);
+			void dump();
+
 			virtual ~ArgParser();
 
 			const std::string& getOpt(const std::string &option, const std::string &sdefault)
@@ -58,6 +61,9 @@ namespace FJPyUtil
 				std::string opt(option);
 				return isSet(opt);
 			}
+
+			const int getOptInt(const char* option, int idefault = 0);
+			const int getOptDouble(const char* option, double ddefault = 0);
 
 		private:
 			ArgParser(); // private construct

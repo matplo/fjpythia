@@ -35,7 +35,11 @@ source ${this_file_directory}/setup.sh
 build_dir=${FJPYTHIADIR}/build
 mkdir -p ${build_dir}
 cd ${build_dir}
-cmake -DCMAKE_INSTALL_PREFIX=${FJPYTHIADIR}/install -DCMAKE_BUILD_TYPE=Release ${FJPYTHIADIR}/src
-make -j && make install
+if [ "x${1}" == "xclean" ]; then
+        make clean
+else
+        cmake -DCMAKE_INSTALL_PREFIX=${FJPYTHIADIR}/install -DCMAKE_BUILD_TYPE=Release ${FJPYTHIADIR}/src
+        make -j && make install
+fi
 
 

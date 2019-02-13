@@ -9,7 +9,7 @@ int main ( int argc, char *argv[] )
 	int rv = 0;
 
 	if (args.isSet("--fjroot"))
-		rv = fj_and_root(argc, argv);
+		rv = fj_and_root();
 
     return rv;
 }

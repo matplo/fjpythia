@@ -48,3 +48,5 @@ if [ -d ${installed_bin_dir} ]; then
                 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${installed_lib_dir}
         fi
 fi
+
+alias fjpythia_build="${this_file_directory}/build.sh"

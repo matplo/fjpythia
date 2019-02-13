@@ -6,7 +6,6 @@ set(SOURCES_LIB
 	strutil.cxx
 	#sysutil.cxx
 	looputil.cxx
-	userinfo.cxx
 	argparser.cxx
 	fjutils.cxx
 )

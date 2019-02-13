@@ -5,7 +5,7 @@ int main ( int argc, char *argv[] )
 {
 	FJPyUtil::ArgParser::Instance().addOpts(argc, argv);
 
-	int rv = example(argc, argv);
+	int rv = example();
 
     return rv;
 }

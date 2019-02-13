@@ -1,8 +1,8 @@
-#include <fastjet/contrib/SoftDrop.hh>
-#include <fjpythia/util/userinfo.h>
 #include <fjpythia/util/fjutils.h>
+#include <fastjet/contrib/SoftDrop.hh>
 
 namespace fj = fastjet;
+
 namespace FJUtils
 {
 	std::vector<fj::PseudoJet> soft_drop_jets(std::vector<fj::PseudoJet> jets, double z_cut, double beta, double Rjet)
@@ -33,5 +33,23 @@ namespace FJUtils
 				soft_dropped.push_back(sd_jet);
 		}
 		return soft_dropped;
+	}
+
+	std::vector<fj::PseudoJet> getPseudoJetsFromPythia(Pythia8::Pythia *pythia, bool only_final)
+	{
+		std::vector<fj::PseudoJet> parts;
+		for (unsigned int ip = 0; ip < pythia->event.size(); ip++)
+		{
+			if (pythia->event[ip].isFinal())
+			{
+				fj::PseudoJet psj;
+				psj.reset_momentum(pythia->event[ip].px(), pythia->event[ip].py(), pythia->event[ip].pz(), pythia->event[ip].e());
+				psj.set_user_index(ip);
+				PythiaUserInfo *uinfo = new PythiaUserInfo(&pythia->event, ip);
+				psj.set_user_info(uinfo);
+				parts.push_back(psj);
+			}
+		}
+		return parts;
 	}
 }

@@ -16,11 +16,8 @@ namespace fj = fastjet;
 #include "Pythia8/Pythia.h"
 using namespace Pythia8;
 
-int example( int argc, char *argv[] )
+int example()
 {
-	auto &args = FJPyUtil::ArgParser::Instance();
-	args.addOpts(argc, argv);
-
 	// main06.cc is a part of the PYTHIA event generator.
 	// Generator.
 	Pythia pythia;
