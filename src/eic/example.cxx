@@ -1,4 +1,6 @@
 #include <fjpythia/eic/example.h>
+#include <fjpythia/util/argparser.h>
+#include <fjpythia/util/strutil.h>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -58,8 +60,9 @@ int example( int argc, char *argv[] )
 	ClusterJet jade("Jade");
 	ClusterJet durham("Durham");
 
+	int nEv = StrUtil::str_to_int(FJPyUtil::ArgParser::Instance().getOpt("nev").c_str(), 100);
 	// Begin event loop. Generate event. Skip if error. List first few.
-	for (int iEvent = 0; iEvent < 10000; ++iEvent) {
+	for (int iEvent = 0; iEvent < nEv; ++iEvent) {
 	if (!pythia.next()) continue;
 
 	// Find and histogram charged multiplicity.

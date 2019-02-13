@@ -1,10 +1,11 @@
 #include <fjpythia/eic/example.h>
+#include <fjpythia/util/argparser.h>
 
 int main ( int argc, char *argv[] )
 {
-	int rv = 0;
+	FJPyUtil::ArgParser::Instance().addOpts(argc, argv);
 
-	rv = example(argc, argv);
+	int rv = example(argc, argv);
 
     return rv;
 }

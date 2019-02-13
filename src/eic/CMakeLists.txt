@@ -27,7 +27,7 @@ target_include_directories(${NAME_LIB} PUBLIC ${ROOT_INCLUDE_DIR} ${FASTJET_DIR}
 # 	target_link_libraries(${NAME_LIB} ${HEPMC_LIBRARIES} ${PROJECT_NAME}_util_hepmc)
 # endif()
 
-target_link_libraries(${NAME_LIB} ${PYTHIA8_LDFLAGS} ${FASTJET_LIBS} libRecursiveTools.a ${ROOT_LIBRARIES})
+target_link_libraries(${NAME_LIB} ${PROJECT_NAME}_util)
 
 add_executable(${NAME_EXE} ${SOURCES_EXE})
 target_include_directories(${NAME_EXE} PUBLIC ${ROOT_INCLUDE_DIR} ${FASTJET_DIR}/include ${PYTHIA8_DIR}/include)

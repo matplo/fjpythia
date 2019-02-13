@@ -58,7 +58,7 @@ fi
 fastjet_installation_directory="${this_file_directory}/../external/fastjet-${fastjet_version}"
 if [ -d ${fastjet_src_dir} ]; then
         cd ${fastjet_src_dir}
-        ./configure --prefix=${fastjet_installation_directory}
+        ./configure --prefix=${fastjet_installation_directory} --disable-cgal
         make -j && make install
 cat >${this_file_directory}/fastjet3_setup.sh <<EOL
 #!/bin/bash
