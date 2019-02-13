@@ -44,7 +44,7 @@ pythia_tgz="${pythia_src_dir}.tgz"
 
 if [ ! -e ${pythia_tgz} ]; then
         echo "downloading pythia..."
-        wget http://home.thep.lu.se/~torbjorn/pythia8/${pythia_tgz}
+        ${wget_command} http://home.thep.lu.se/~torbjorn/pythia8/${pythia_tgz}
 fi
 
 if [ -d ${pythia_src_dir} ]; then
