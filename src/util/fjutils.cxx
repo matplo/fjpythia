@@ -3,6 +3,8 @@
 
 namespace fj = fastjet;
 
+#include <iostream>
+
 namespace FJUtils
 {
 	std::vector<fj::PseudoJet> soft_drop_jets(std::vector<fj::PseudoJet> jets, double z_cut, double beta, double Rjet)
@@ -12,7 +14,7 @@ namespace FJUtils
 		// Use a symmetry cut z > z_cut R^beta
 		// By default, there is no mass-drop requirement
 		fj::contrib::SoftDrop sd(beta, z_cut, Rjet);
-		// cout << "SoftDrop groomer is: " << sd.description() << endl;
+		// std::cout << "SoftDrop groomer is: " << sd.description() << std::endl;
 
 		std::vector<fj::PseudoJet> soft_dropped;
 		for (unsigned ijet = 0; ijet < jets.size(); ijet++)
@@ -25,9 +27,9 @@ namespace FJUtils
 
 				assert(sd_jet      != 0); //because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-				// cout << "  delta_R between subjets: " << sd_jet.structure_of<fj::contrib::SoftDrop>().delta_R() << endl;
-				// cout << "  symmetry measure(z):     " << sd_jet.structure_of<fj::contrib::SoftDrop>().symmetry() << endl;
-				// cout << "  mass drop(mu):           " << sd_jet.structure_of<fj::contrib::SoftDrop>().mu() << endl;
+				// std::cout << "  delta_R between subjets: " << sd_jet.structure_of<fj::contrib::SoftDrop>().delta_R() << std::endl;
+				// std::cout << "  symmetry measure(z):     " << sd_jet.structure_of<fj::contrib::SoftDrop>().symmetry() << std::endl;
+				// std::cout << "  mass drop(mu):           " << sd_jet.structure_of<fj::contrib::SoftDrop>().mu() << std::endl;
 
 				sd_jet.set_user_index(ijet);
 				soft_dropped.push_back(sd_jet);

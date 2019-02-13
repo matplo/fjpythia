@@ -66,7 +66,7 @@ pythia_directory_src="${this_file_directory}/../downloads"
 mkdir ${pythia_directory_src}
 cd ${pythia_directory_src}
 
-pythia_version=8240
+pythia_version=8235
 pythia_src_dir="pythia${pythia_version}"
 pythia_tgz="${pythia_src_dir}.tgz"
 
