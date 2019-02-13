@@ -1,5 +1,5 @@
-#ifndef __UTIL_USERINFO__HH
-#define __UTIL_USERINFO__HH
+#ifndef FJPYTHIA__UTIL_USERINFO__HH
+#define FJPYTHIA__UTIL_USERINFO__HH
 
 #include <fastjet/PseudoJet.hh>
 #include <Pythia8/Pythia.h>

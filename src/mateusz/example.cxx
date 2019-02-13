@@ -1,7 +1,6 @@
 #include <fjpythia/eic/example.h>
 #include <fjpythia/util/argparser.h>
 #include <fjpythia/util/strutil.h>
-#include <fjpythia/util/argparser.h>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -18,9 +17,6 @@ using namespace Pythia8;
 
 int example( int argc, char *argv[] )
 {
-	auto &args = FJPyUtil::ArgParser::Instance();
-	args.addOpts(argc, argv);
-
 	// main06.cc is a part of the PYTHIA event generator.
 	// Generator.
 	Pythia pythia;

@@ -25,7 +25,7 @@ namespace FJPyUtil
 
 			virtual ~ArgParser();
 
-			const std::string& getOpt(const std::string &option)
+			const std::string& getOpt(const std::string &option, const std::string &sdefault)
 			{
 				registerOpt(option);
 				std::vector<std::string>::const_iterator itr;
@@ -34,14 +34,16 @@ namespace FJPyUtil
 				{
 					return *itr;
 				}
-				static const std::string empty_string("");
-				return empty_string;
+				// static const std::string empty_string("");
+				// return empty_string;
+				return sdefault;
 			}
 
-			const std::string& getOpt(const char* option)
+			const std::string& getOpt(const char* option, const char *ccdefault = "")
 			{
 				std::string opt(option);
-				return getOpt(opt);
+				std::string sdefault(ccdefault);
+				return getOpt(opt, sdefault);
 			}
 
 			bool isSet(const std::string &option)
