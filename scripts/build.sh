@@ -28,7 +28,7 @@ function thisdir()
 }
 
 this_file_directory=`thisdir`
-echo ${this_file_directory}
+# echo ${this_file_directory}
 
 source ${this_file_directory}/setup.sh
 

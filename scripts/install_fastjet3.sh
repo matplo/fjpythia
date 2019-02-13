@@ -60,9 +60,13 @@ if [ -d ${fastjet_src_dir} ]; then
         cd ${fastjet_src_dir}
         ./configure --prefix=${fastjet_installation_directory}
         make -j && make install
-        echo "#!/bin/bash" > ${this_file_directory}/fastjet3_setup.sh
-        echo "export FASTJETDIR=${fastjet_installation_directory}" >> ${this_file_directory}/fastjet3_setup.sh
-        echo "export PATH=${PATH}:${fastjet_installation_directory}/bin" >> ${this_file_directory}/fastjet3_setup.sh
+cat >${this_file_directory}/fastjet3_setup.sh <<EOL
+#!/bin/bash
+export FASTJETDIR=${fastjet_installation_directory}
+export PATH=\${PATH}:${fastjet_installation_directory}/bin
+export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:\$(fastjet-config --libdir)
+export DYLD_LIBRARY_PATH=\${DYLD_LIBRARY_PATH}:\$(fastjet-config --libdir)
+EOL
 else
         echo "error! fj src directory not found"
 fi
@@ -90,7 +94,8 @@ fi
 if [ -d ${fastjet_contrib_src_dir} ]; then
         cd ${fastjet_contrib_src_dir}
         ./configure --fastjet-config=${fastjet_installation_directory}/bin/fastjet-config
-        make -j && make check && make install
+        # make -j && make check && make install
+        make -j && make install
 else
         echo "error! fj src directory not found"
 fi
