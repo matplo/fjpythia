@@ -31,7 +31,7 @@ this_file_directory=`thisdir`
 echo ${this_file_directory}
 
 [ -e ${this_file_directory}/root6_setup.sh ] && source ${this_file_directory}/root6_setup.sh
-[ -e ${this_file_directory}/fastjet_setup.sh ] && source ${this_file_directory}/fastjet_setup.sh
+[ -e ${this_file_directory}/fastjet3_setup.sh ] && source ${this_file_directory}/fastjet3_setup.sh
 [ -e ${this_file_directory}/pythia8_setup.sh ] && source ${this_file_directory}/pythia8_setup.sh
 
 export FJPYTHIADIR="${this_file_directory}/.."
