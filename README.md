@@ -4,11 +4,10 @@ minimalistic setup for fastjet and pythia
 # installation
 
 - note: relies that ROOT (root.cern.ch) is already installed
--- setup environment for root and run `./scripts/make_root_setup.sh`
+   - setup environment for root and run `./scripts/make_root_setup.sh`
 
 - to install fastjet 3: `./scripts/install_fastjet3.sh`
--- note the tests on contributed algos are disabled - enable/run `make check`
+   - note, the tests on contributed algos are disabled - enable/run `make check`
 - to install pythia8: `./scripts/pythia8_setup.sh`
 - build: `./scripts/build.sh`
 - run an example: `./scripts/run.sh`
-
