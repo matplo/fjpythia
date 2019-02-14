@@ -11,5 +11,5 @@ int main ( int argc, char *argv[] )
 	if (args.isSet("--fjroot"))
 		rv = fj_and_root();
 
-    return rv;
+	return rv;
 }
