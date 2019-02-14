@@ -29,14 +29,14 @@ namespace FJPyUtil
 			std::cout << "    " << s << std::endl;
 	}
 
-	const int ArgParser::getOptInt(const char* option, int idefault)
+	int ArgParser::getOptInt(const char* option, int idefault)
 	{
 		if (isSet(option))
 			return StrUtil::str_to_int(getOpt(option).c_str(), idefault);
 		return idefault;
 	}
 
-	const double ArgParser::getOptDouble(const char* option, double ddefault)
+	double ArgParser::getOptDouble(const char* option, double ddefault)
 	{
 		if (isSet(option))
 			return StrUtil::str_to_double(getOpt(option).c_str(), ddefault);

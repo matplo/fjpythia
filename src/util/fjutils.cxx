@@ -11,19 +11,19 @@ namespace FJUtils
 	{
 		for (auto idx : idxs)
 		{
-			std::cout << idx << std::endl;
+			// std::cout << idx << std::endl;
 			for (unsigned int i = 0; i < v.size(); i++)
 			{
 				if (v[i].user_index() == idx)
 				{
-					std::cout << " pt: " << v[i].perp() << std::endl;
+					// std::cout << "--> uidx=" << idx << " : in-v-idx=" << i << std::endl;
+					// std::cout << " pt: " << v[i].perp() << std::endl;
 					v[i] = v[i] * 1.e-6;
 					// v[i].reset_momentum(v[i].px() / v[i].e() / 100.,
 					//                         v[i].py() / v[i].e() / 100.,
 					//                         v[i].pz() / v[i].e() / 100.,
 					//                         v[i].e() / v[i].e() / 100.);
-					std::cout << "-->" << idx << std::endl;
-					std::cout << " pt: " << v[i].perp() << std::endl;
+					// std::cout << " pt: " << v[i].perp() << std::endl;
 				}
 			}
 		}
@@ -62,9 +62,21 @@ namespace FJUtils
 	std::vector<fj::PseudoJet> getPseudoJetsFromPythia(Pythia8::Pythia *pythia, bool only_final)
 	{
 		std::vector<fj::PseudoJet> parts;
-		for (unsigned int ip = 0; ip < pythia->event.size(); ip++)
+		for (int ip = 0; ip < pythia->event.size(); ip++)
 		{
-			if (pythia->event[ip].isFinal())
+			if (only_final)
+			{
+				if (pythia->event[ip].isFinal())
+				{
+					fj::PseudoJet psj;
+					psj.reset_momentum(pythia->event[ip].px(), pythia->event[ip].py(), pythia->event[ip].pz(), pythia->event[ip].e());
+					psj.set_user_index(ip);
+					PythiaUserInfo *uinfo = new PythiaUserInfo(&pythia->event, ip);
+					psj.set_user_info(uinfo);
+					parts.push_back(psj);
+				}
+			}
+			else
 			{
 				fj::PseudoJet psj;
 				psj.reset_momentum(pythia->event[ip].px(), pythia->event[ip].py(), pythia->event[ip].pz(), pythia->event[ip].e());

@@ -62,8 +62,8 @@ namespace FJPyUtil
 				return isSet(opt);
 			}
 
-			const int getOptInt(const char* option, int idefault = 0);
-			const double getOptDouble(const char* option, double ddefault = 0);
+			int getOptInt(const char* option, int idefault = 0);
+			double getOptDouble(const char* option, double ddefault = 0);
 
 		private:
 			ArgParser(); // private construct

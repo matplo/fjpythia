@@ -32,8 +32,11 @@ int fj_and_root()
 	// book histograms
 	TH1F hjetpt("hjetpt", "p_{T}^{jet} (GeV/c)", 50, 0, 50);
 	// book some ntuples
-	TNtuple tne("tne", "tne", "n:pid:xsec");
-	TNtuple tnj("tnj", "tnj", "pid:xsec:pt:phi:eta:sdpt:sdphi:sdeta:sdDR:zg:sdmu");
+	TNtuple tne("tne", "tne", "n:procid:xsec");
+	// particles
+	TNtuple tnp("tnp", "tnp", "procid:xsec:pt:phi:eta:m:pid:status");
+	// jets
+	TNtuple tnj("tnj", "tnj", "procid:xsec:pt:phi:eta:lpt:lpid:lstatus:sdpt:sdphi:sdeta:sdDR:zg:sdmu");
 
 	// intialize PYTHIA
 	Pythia pythia;
@@ -48,7 +51,7 @@ int fj_and_root()
 	int nEv = args.getOptInt("--nev", 1); // default will be 1 event(!)
 	double jetR = args.getOptDouble("--jetR", 0.4);
 	double minJetPt = args.getOptDouble("--minJetPt", 0.0);
-	double maxPartEta = std::abs(args.getOptDouble("--maxParticleEta", 10.));
+	double maxPartEta = std::abs(args.getOptDouble("--maxParticleEta", 20.));
 
 	// dump some parameters of the analysis
 	cout << "[i] configuration: " << endl
@@ -69,16 +72,20 @@ int fj_and_root()
 		if (!pythia.next()) continue;
 		tne.Fill(iEvent, pythia.info.code(), pythia.info.sigmaGen());
 
-		auto parts = FJUtils::getPseudoJetsFromPythia(&pythia);
+		auto parts = FJUtils::getPseudoJetsFromPythia(&pythia, true); // only_final==true
 		std::vector<fj::PseudoJet> parts_selected = partSelector(parts);
 
 		// get the beam scattered electrons
-		if (parts_selected.size() > 5)
-			cout << "pre:" << parts_selected.at(5).perp() << endl;
 		auto hard_electron_indexes = PythiaUtils::find_outgoing_hard_electrons(&pythia);
+
+		for (auto &psj : parts_selected)
+		{
+			Pythia8::Particle *_p = psj.user_info<FJUtils::PythiaUserInfo>().getParticle();
+			tnp.Fill(pythia.info.code(), pythia.info.sigmaGen(),
+			         psj.perp(), psj.phi(), psj.eta(), _p->m(), _p->id(), _p->status());
+		}
+
 		FJUtils::mask_momentum_of(hard_electron_indexes, parts_selected);
-		if (parts_selected.size() > 5)
-			cout << "post:" << parts_selected.at(5).perp() << endl;
 
 		// run jet finding
 		fj::JetDefinition jet_def(fj::antikt_algorithm, jetR);
@@ -93,11 +100,16 @@ int fj_and_root()
 		for (unsigned int ij = 0; ij < jets.size(); ij++)
 		{
 			hjetpt.Fill(jets[ij].perp());
+			auto _lead = fastjet::sorted_by_pt(jets[ij].constituents())[0];
+			Pythia8::Particle *_lead_py = _lead.user_info<FJUtils::PythiaUserInfo>().getParticle();
 			tnj.Fill(pythia.info.code(), pythia.info.sigmaGen(),
 			         jets[ij].perp(), jets[ij].phi(), jets[ij].eta(),
+			         // leading particle in the jet - by pT
+			         _lead.perp(), _lead_py->id(), _lead_py->status(),
+			         // after soft drop
 			         sdjets[ij].perp(), sdjets[ij].phi(), sdjets[ij].eta(),
 			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().delta_R(),
-			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().symmetry(),
+			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().symmetry(), // aka zg
 			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().mu());
 		}
 	}

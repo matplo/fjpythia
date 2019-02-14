@@ -13,13 +13,23 @@ namespace PythiaUtils
 	std::vector<int> find_outgoing_hard_electrons(Pythia8::Pythia *pythia)
 	{
 		std::vector<int> v;
-		for (unsigned int i = 0; i < pythia->event.size(); i++)
+		for (int i = 0; i < pythia->event.size(); i++)
 		{
 			if (!pythia->event[i].isFinal()) continue;
 			if (pythia->event[i].id() == 11)
 			{
-				if (pythia->event[i].status() == 23)
+				// http://home.thep.lu.se/~torbjorn/pythia81html/ParticleProperties.html
+				// 21 - 29 : particles of the hardest subprocess
+				// 23 : outgoing
+				// 44 : outgoing shifted by a branching
+				// if (pythia->event[i].status() == 23 || pythia->event[i].status() == 44)
+
+				// 91 - 99 : particles produced in decay process, or by Bose-Einstein effects
+				// 91 : normal decay products
+				if (pythia->event[i].status() != 91) // not from a decay
+				{
 					v.push_back(i);
+				}
 			}
 		}
 		return v;
