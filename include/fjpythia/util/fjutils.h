@@ -9,6 +9,8 @@
 
 namespace FJUtils
 {
+	void mask_momentum_of(std::vector<int> idxs, std::vector<fastjet::PseudoJet>& v);
+
 	// not some default values(!)
 	std::vector<fastjet::PseudoJet> soft_drop_jets(std::vector<fastjet::PseudoJet> jets,
 	                                               double z_cut = 0.1,

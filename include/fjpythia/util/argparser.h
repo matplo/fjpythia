@@ -63,7 +63,7 @@ namespace FJPyUtil
 			}
 
 			const int getOptInt(const char* option, int idefault = 0);
-			const int getOptDouble(const char* option, double ddefault = 0);
+			const double getOptDouble(const char* option, double ddefault = 0);
 
 		private:
 			ArgParser(); // private construct

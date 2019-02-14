@@ -7,6 +7,28 @@ namespace fj = fastjet;
 
 namespace FJUtils
 {
+	void mask_momentum_of(std::vector<int> idxs, std::vector<fastjet::PseudoJet>& v)
+	{
+		for (auto idx : idxs)
+		{
+			std::cout << idx << std::endl;
+			for (unsigned int i = 0; i < v.size(); i++)
+			{
+				if (v[i].user_index() == idx)
+				{
+					std::cout << " pt: " << v[i].perp() << std::endl;
+					v[i] = v[i] * 1.e-6;
+					// v[i].reset_momentum(v[i].px() / v[i].e() / 100.,
+					//                         v[i].py() / v[i].e() / 100.,
+					//                         v[i].pz() / v[i].e() / 100.,
+					//                         v[i].e() / v[i].e() / 100.);
+					std::cout << "-->" << idx << std::endl;
+					std::cout << " pt: " << v[i].perp() << std::endl;
+				}
+			}
+		}
+	}
+
 	std::vector<fj::PseudoJet> soft_drop_jets(std::vector<fj::PseudoJet> jets, double z_cut, double beta, double Rjet)
 	{
 		// http://fastjet.hepforge.org/svn/contrib/contribs/RecursiveTools/tags/1.0.0/example_softdrop.cc

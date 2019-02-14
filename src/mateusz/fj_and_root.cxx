@@ -2,6 +2,8 @@
 #include <fjpythia/util/argparser.h>
 #include <fjpythia/util/strutil.h>
 #include <fjpythia/util/fjutils.h>
+#include <fjpythia/util/looputil.h>
+#include <fjpythia/util/pyutils.h>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -22,6 +24,7 @@ using namespace Pythia8;
 int fj_and_root()
 {
 	auto &args = FJPyUtil::ArgParser::Instance();
+	args.dump();
 
 	// open an output file
 	std::string foutname = args.getOpt("--out", "default_output.root");
@@ -34,33 +37,7 @@ int fj_and_root()
 
 	// intialize PYTHIA
 	Pythia pythia;
-	pythia.readString("Next:numberShowEvent=0");
-
-	// main06.cc is a part of the PYTHIA event generator.
-	// setup some default settings - if nothing specified by the user
-	if (!args.isSet("--pythia-config") and !args.isSet("--pythia"))
-	{
-		// TString sdemo = TString("--pythia PDF:lepton=off,WeakSingleBoson:ffbar2gmZ=on,23:onMode=off,23:onIfAny=1_2_3_4_5,Beams:idA=11,Beams:idB=-11,Beams:eCM=91.188,");
-		// double mZ = pythia.particleData.m0(23);
-		// TString smZ = TString::Format("Beams:eCM=%.5f", mZ);
-		// sdemo += smZ;
-		TString sdemo = TString("--pythia Beams:frameType=2,Beams:idA=2212,Beams:idB=11,Beams:eA=250,Beams:eB=20,WeakBosonExchange:ff2ff(t:gmZ)=on,PhaseSpace:Q2Min=10,SpaceShower:pTmaxMatch=2,PDF:lepton=off,TimeShower:QEDshowerByL=off");
-		args.addOpts(sdemo.Data());
-	}
-	args.dump();
-	// settings from a cmnd file?
-	if (args.isSet("--pythia-config"))
-	{
-		pythia.readFile(args.getOpt("--pythia-config").c_str());
-	}
-	// settings from a command line?
-	std::string pythiaOpt = args.getOpt("--pythia");
-	auto pyopts = StrUtil::split_to_vector(pythiaOpt.c_str(), ",");
-	for (auto o : pyopts)
-	{
-		StrUtil::replace_substring(o, "_", " ");
-		pythia.readString(o.c_str());
-	}
+	PythiaUtils::cook_pythia_settings(&pythia);
 	if (!pythia.init())
 	{
 		cout << "[e] pythia init failed." << endl;
@@ -85,37 +62,37 @@ int fj_and_root()
 	fj::Selector jetSelector = fastjet::SelectorAbsEtaMax(maxPartEta - jetR - 0.01) * fastjet::SelectorPtMin(minJetPt);
 
 	// Begin event loop. Generate event. Skip if error. List first few.
+	LoopUtil::TPbar pbar(nEv);
 	for (int iEvent = 0; iEvent < nEv; ++iEvent)
 	{
+		pbar.Update();
 		if (!pythia.next()) continue;
 		tne.Fill(iEvent, pythia.info.code(), pythia.info.sigmaGen());
 
 		auto parts = FJUtils::getPseudoJetsFromPythia(&pythia);
 		std::vector<fj::PseudoJet> parts_selected = partSelector(parts);
 
+		// get the beam scattered electrons
+		if (parts_selected.size() > 5)
+			cout << "pre:" << parts_selected.at(5).perp() << endl;
+		auto hard_electron_indexes = PythiaUtils::find_outgoing_hard_electrons(&pythia);
+		FJUtils::mask_momentum_of(hard_electron_indexes, parts_selected);
+		if (parts_selected.size() > 5)
+			cout << "post:" << parts_selected.at(5).perp() << endl;
+
 		// run jet finding
 		fj::JetDefinition jet_def(fj::antikt_algorithm, jetR);
 		fj::ClusterSequence ca(parts_selected, jet_def);
-		auto jets = jetSelector(ca.inclusive_jets());
+		std::vector<fj::PseudoJet> jets_inclusive = ca.inclusive_jets();
+		std::vector<fj::PseudoJet> jets = jetSelector(jets_inclusive);
 
 		// soft drop jets
 		std::vector<fj::PseudoJet> sdjets = FJUtils::soft_drop_jets(jets, 0.1, 0.0, jetR); // note, running with default soft drop
 
-		fj::contrib::SoftDrop sd(0.1, 0.0, 0.4); //(beta, z_cut, Rjet);
 		// write jet properties to an ntuple
 		for (unsigned int ij = 0; ij < jets.size(); ij++)
 		{
 			hjetpt.Fill(jets[ij].perp());
-			fj::PseudoJet sd_jet = sd(jets[ij]);
-			// cout << endl;
-			// cout << "original    jet: " << jets[ijet] << endl;
-			// cout << "SoftDropped jet: " << sd_jet << endl;
-
-			assert(sd_jet      != 0); //because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
-
-			// std::cout << "  delta_R between subjets: " << sd_jet.structure_of<fj::contrib::SoftDrop>().delta_R() << std::endl;
-			// std::cout << "  symmetry measure(z):     " << sd_jet.structure_of<fj::contrib::SoftDrop>().symmetry() << std::endl;
-			// std::cout << "  mass drop(mu):           " << sd_jet.structure_of<fj::contrib::SoftDrop>().mu() << std::endl;
 			tnj.Fill(pythia.info.code(), pythia.info.sigmaGen(),
 			         jets[ij].perp(), jets[ij].phi(), jets[ij].eta(),
 			         sdjets[ij].perp(), sdjets[ij].phi(), sdjets[ij].eta(),
@@ -127,7 +104,7 @@ int fj_and_root()
 	// write and close the output file
 	fout.Write();
 	fout.Close();
-	cout << "[i] file written: " << fout.GetName();
+	cout << "[i] file written: " << fout.GetName() << endl;
 	// Done.
 	return 0;
 }

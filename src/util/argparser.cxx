@@ -36,7 +36,7 @@ namespace FJPyUtil
 		return idefault;
 	}
 
-	const int ArgParser::getOptDouble(const char* option, double ddefault)
+	const double ArgParser::getOptDouble(const char* option, double ddefault)
 	{
 		if (isSet(option))
 			return StrUtil::str_to_double(getOpt(option).c_str(), ddefault);
@@ -53,7 +53,6 @@ namespace FJPyUtil
 			{
 				std::cout << "    " << st << std::endl;
 			}
-			std::cout << "    ... done." << std::endl;
 		}
 	}
 }

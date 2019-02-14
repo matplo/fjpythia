@@ -8,6 +8,7 @@ set(SOURCES_LIB
 	looputil.cxx
 	argparser.cxx
 	fjutils.cxx
+	pyutils.cxx
 )
 
 set_headers_lib(HEADERS_LIB SOURCES_LIB)
