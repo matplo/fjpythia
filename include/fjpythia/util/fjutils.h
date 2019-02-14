@@ -17,6 +17,45 @@ namespace FJUtils
 	                                               double beta = 0.0,
 	                                               double Rjet = 1.0);
 
+	int leading_pid(const fastjet::PseudoJet &j);
+	Pythia8::Particle * leading_pythia(const fastjet::PseudoJet &j);
+
+	struct LundSplit
+	{
+		LundSplit(double _pt, double _e, double _pt1, double _pt2, double _dR, double _lpt1, int _lpid1)
+		{
+			pt = _pt;
+			e = _e;
+			pt1 = _pt1;
+			pt2 = _pt2;
+			dR  = _dR;
+			lpt1 = _lpt1;
+			lpid1 = _lpid1;
+		}
+		double pt, e, pt1, pt2, dR, lpt1;
+		int lpid1;
+	};
+
+	class LundJetInfo : public fastjet::PseudoJet::UserInfoBase
+	{
+	public:
+		LundJetInfo()
+			: fastjet::PseudoJet::UserInfoBase::UserInfoBase(), fSplits()
+		{
+			;
+		}
+		std::vector<LundSplit> &splits() {return fSplits;}
+		void addSplit(double _pt, double _e, double _pt1, double _pt2, double _dR, double _lpt1, int _lpid1)
+		{
+			LundSplit split(_pt, _e, _pt1, _pt2, _dR, _lpt1, _lpid1);
+			fSplits.push_back(split);
+		}
+	private:
+		std::vector<LundSplit> fSplits;
+	};
+
+	void lund_decluster(std::vector<fastjet::PseudoJet> &jets);
+
 	class PythiaUserInfo : public fastjet::PseudoJet::UserInfoBase
 	{
 	public:
