@@ -21,7 +21,7 @@ using namespace Pythia8;
 
 #include <TString.h>
 
-namespace mateusz
+namespace jose
 {
 int fj_and_root()
 {

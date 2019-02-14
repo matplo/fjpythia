@@ -1,4 +1,4 @@
-#include <fjpythia/mateusz/fj_and_root.h>
+#include <fjpythia/jose/fj_and_root.h>
 #include <fjpythia/util/argparser.h>
 
 int main ( int argc, char *argv[] )
@@ -9,7 +9,7 @@ int main ( int argc, char *argv[] )
 	int rv = 0;
 
 	if (args.isSet("--fjroot"))
-		rv = mateusz::fj_and_root();
+		rv = jose::fj_and_root();
 
 	return rv;
 }
