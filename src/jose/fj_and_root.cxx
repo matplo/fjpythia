@@ -31,8 +31,22 @@ int fj_and_root()
 	// open an output file
 	std::string foutname = args.getOpt("--out", "default_output.root");
 	TFile fout(foutname.c_str(), "recreate");
-	// book histograms
-	TH1F hjetpt("hjetpt", "p_{T}^{jet} (GeV/c)", 50, 0, 50);
+    fout.cd();
+        // book histograms
+        TH1F h_Q("h_Q", "Q [GeV]", 100, 0., 50.);
+        TH1F h_W("h_W", "W [GeV]", 100, 0., 140.);
+        TH1F h_x("h_x", "x", 100, 0., 1.);
+        TH1F h_y("h_y", "y", 100, 0., 1.);
+        TH1F h_nu("h_nu", "nu [GeV]", 100, 0., 10000.);
+    
+        TH1F h_pTe("h_pTe", "pT of scattered electron", 100, 0., 20.);
+    
+        TH1F h_pTjets("h_pTjets", "p_{T}^{jet} (GeV/c)", 40, 0., 40.);
+        //TH1F h_etaJets("h_etaJets", "eta for jets", 20, -5., 5.);
+        //TH1F h_phiJets("h_phiJets", "phi for jets", 30, -M_PI, M_PI);
+        //TH1F h_mJets("h_mJets", "mass for jets", 30, 0., 30.);
+        //TH1F h_multJets("h_multJets", "multiplicity for jets", 15, 0., 30.);
+    
 	// book some ntuples
 	TNtuple tne("tne", "tne", "n:procid:xsec");
 	// particles
@@ -42,6 +56,8 @@ int fj_and_root()
 
 	// intialize PYTHIA
 	Pythia pythia;
+        Event& event = pythia.event;
+    
 	PythiaUtils::cook_pythia_settings(&pythia);
 	if (!pythia.init())
 	{
@@ -72,6 +88,31 @@ int fj_and_root()
 	{
 		pbar.Update();
 		if (!pythia.next()) continue;
+        
+            double mProton = event[1].m();
+        
+            // Four-momenta of proton, electron, virtual photon/Z^0/W^+-.
+            Vec4 pProton = event[1].p();
+            Vec4 peIn    = event[4].p();
+            Vec4 peOut   = event[6].p();
+            Vec4 pPhoton = peIn - peOut;
+        
+            // Q2, W2, Bjorken x, y, nu.
+            double Q2  = - pPhoton.m2Calc();
+            double W2  = (pProton + pPhoton).m2Calc();
+            double x   = Q2 / (2. * pProton * pPhoton);
+            double y   = (pProton * pPhoton) / (pProton * peIn);
+            double nu  = (pProton * pPhoton) / mProton;
+        
+            // Fill kinematics histograms.
+            h_Q.Fill( sqrt(Q2) );
+            h_W.Fill( sqrt(W2) );
+            h_x.Fill( x );
+            h_y.Fill( y );
+            h_nu.Fill( nu );
+        
+            h_pTe.Fill( event[6].pT() );
+        
 		tne.Fill(iEvent, pythia.info.code(), pythia.info.sigmaGen());
 
 		auto parts = FJUtils::getPseudoJetsFromPythia(&pythia, true); // only_final==true
@@ -101,7 +142,7 @@ int fj_and_root()
 		// write jet properties to an ntuple
 		for (unsigned int ij = 0; ij < jets.size(); ij++)
 		{
-			hjetpt.Fill(jets[ij].perp());
+			h_pTjets.Fill(jets[ij].perp());
 			auto _lead = fastjet::sorted_by_pt(jets[ij].constituents())[0];
 			Pythia8::Particle *_lead_py = _lead.user_info<FJUtils::PythiaUserInfo>().getParticle();
 			tnj.Fill(pythia.info.code(), pythia.info.sigmaGen(),
