@@ -6,6 +6,7 @@
 #include <fjpythia/util/pyutils.h>
 
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TNtuple.h>
@@ -33,6 +34,7 @@ int fj_and_root()
 	TFile fout(foutname.c_str(), "recreate");
 	// book histograms
 	TH1F hjetpt("hjetpt", "p_{T}^{jet} (GeV/c)", 50, 0, 50);
+	TH2F hlund("hlund", "hlund;log(1/#theta);log(k_{T});density", 60, 0, 6, 180, -9, 9);
 	// book some ntuples
 	TNtuple tne("tne", "tne", "n:procid:xsec");
 	// particles
@@ -98,10 +100,19 @@ int fj_and_root()
 		// soft drop jets
 		std::vector<fj::PseudoJet> sdjets = FJUtils::soft_drop_jets(jets, 0.1, 0.0, jetR); // note, running with default soft drop
 
+		// lund declustering
+		FJUtils::lund_decluster(jets);
+
 		// write jet properties to an ntuple
 		for (unsigned int ij = 0; ij < jets.size(); ij++)
 		{
 			hjetpt.Fill(jets[ij].perp());
+			if (jets[ij].has_user_info<FJUtils::LundJetInfo>())
+			{
+				auto lsplits = jets[ij].user_info<FJUtils::LundJetInfo>();
+				for (auto &lsplit : lsplits.splits())
+					hlund.Fill(log(1./lsplit.dR), log(lsplit.pt2 * lsplit.dR));
+			}
 			auto _lead = fastjet::sorted_by_pt(jets[ij].constituents())[0];
 			Pythia8::Particle *_lead_py = _lead.user_info<FJUtils::PythiaUserInfo>().getParticle();
 			tnj.Fill(pythia.info.code(), pythia.info.sigmaGen(),
