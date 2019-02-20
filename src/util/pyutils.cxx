@@ -101,6 +101,12 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
+		if (isSet("--time-seed"))
+		{
+			pythia->readString("Random:setSeed=on");
+			pythia->readString("Random:seed=0");
+		}
+
 		if (!args.isSet("--pythia-process-configured"))
 		{
 			cout << "[w] this will likely fail. enable a process with a flag or --pythia list,of,settings,..." << endl;
