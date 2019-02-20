@@ -101,7 +101,7 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--time-seed"))
+		if (args.isSet("--time-seed"))
 		{
 			pythia->readString("Random:setSeed=on");
 			pythia->readString("Random:seed=0");
