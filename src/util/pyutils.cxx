@@ -46,16 +46,6 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		// settings from a command line?
-		std::string pythiaOpt = args.getOpt("--pythia");
-		auto pyopts = StrUtil::split_to_vector(pythiaOpt.c_str(), ",");
-		for (auto o : pyopts)
-		{
-			StrUtil::replace_substring(o, "_", " ");
-			pythia->readString(o.c_str());
-			args.addOpts("--pythia-process-configured");
-		}
-
 		int nDebugEvents = args.getOptInt("--debug-events", 0);
 		pythia->readString(TString::Format("Next:numberShowEvent=%d", nDebugEvents).Data());
 		pythia->readString(TString::Format("Next:numberShowInfo=%d", nDebugEvents).Data());
@@ -99,6 +89,16 @@ namespace PythiaUtils
 
 				args.addOpts("--pythia-process-configured");
 			}
+		}
+
+		// settings from a command line?
+		std::string pythiaOpt = args.getOpt("--pythia");
+		auto pyopts = StrUtil::split_to_vector(pythiaOpt.c_str(), ",");
+		for (auto o : pyopts)
+		{
+			StrUtil::replace_substring(o, "_", " ");
+			pythia->readString(o.c_str());
+			args.addOpts("--pythia-process-configured");
 		}
 
 		if (!args.isSet("--pythia-process-configured"))
