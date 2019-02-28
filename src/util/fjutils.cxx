@@ -19,7 +19,6 @@ namespace FJUtils
 
 	Pythia8::Particle * leading_pythia(const fastjet::PseudoJet &j)
 	{
-		int lpid = 0;
 		auto _lead = fj::SelectorNHardest(1)(j.constituents())[0];
 		Pythia8::Particle *_lead_py = _lead.user_info<FJUtils::PythiaUserInfo>().getParticle();
 		return _lead_py;
