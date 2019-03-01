@@ -129,6 +129,9 @@ int fj_and_root()
 	// write and close the output file
 	fout.Write();
 	fout.Close();
+
+	pythia.stat();
+
 	cout << "[i] file written: " << fout.GetName() << endl;
 	// Done.
 	return 0;

@@ -52,13 +52,17 @@ namespace PythiaUtils
 		pythia->readString(TString::Format("Next:numberShowProcess=%d", nDebugEvents).Data());
 		pythia->readString(TString::Format("Next:numberCount=%d", nDebugEvents).Data());
 
+		pythia->readString("Stat:showProcessLevel=on");
+
 		if (args.isSet("--hardQCD"))
 		{
 			pythia->readString("HardQCD:all=on");
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (args.isSet("--eic-dis") or args.isSet("--eic-lowQ2"))
+		if (args.isSet("--eic-dis") or args.isSet("--eic-lowQ2") or
+		    args.isSet("--eic-cgamma") or args.isSet("--eic-bgamma") or args.isSet("--eic-qgamma") or
+		    args.isSet("--eic-test"))
 		{
 			pythia->readString("Beams:idA=11");
 			pythia->readString("Beams:idB=2212");
@@ -88,6 +92,50 @@ namespace PythiaUtils
 				pythia->readString("Photon:ProcessType=0");
 
 				args.addOpts("--pythia-process-configured");
+			}
+			if (args.isSet("--eic-cgamma"))
+			{
+				pythia->readString("PDF:lepton2gamma=on");
+				pythia->readString("PhotonParton:ggm2ccbar=on");
+
+				args.addOpts("--pythia-process-configured");
+			}
+
+			if (args.isSet("--eic-bgamma"))
+			{
+				pythia->readString("PDF:lepton2gamma=on");
+				pythia->readString("PhotonParton:ggm2bbbar=on");
+
+				args.addOpts("--pythia-process-configured");
+			}
+
+			if (args.isSet("--eic-qgamma"))
+			{
+				pythia->readString("PDF:lepton2gamma=on");
+				pythia->readString("PhotonParton:qgm2qgm=on");
+
+				args.addOpts("--pythia-process-configured");
+			}
+
+			if (args.isSet("--eic-test"))
+			{
+				pythia->readString("WeakBosonExchange:ff2ff(t:gmZ)=on");
+				pythia->readString("PhaseSpace:Q2Min=1");
+				pythia->readString("SpaceShower:pTmaxMatch=2");
+				pythia->readString("PDF:lepton=off");
+				pythia->readString("TimeShower:QEDshowerByL=off");
+
+				pythia->readString("HardQCD:all=on");
+				pythia->readString("PDF:lepton2gamma=on");
+				pythia->readString("Photon:Q2max=1.");
+				pythia->readString("Photon:Wmin=10.");
+				pythia->readString("PhaseSpace:pTHatMin=1.");
+				pythia->readString("PhaseSpace:pTHatMax=18.");
+				pythia->readString("PhotonParton:all=on");
+				pythia->readString("Photon:ProcessType=0");
+
+				args.addOpts("--pythia-process-configured");
+
 			}
 		}
 
