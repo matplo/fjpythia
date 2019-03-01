@@ -35,6 +35,23 @@ namespace PythiaUtils
 		return v;
 	}
 
+	std::vector<int> find_outgoing_beam_remnants(Pythia8::Pythia *pythia)
+	{
+		std::vector<int> v;
+		for (int i = 0; i < pythia->event.size(); i++)
+		{
+			if (!pythia->event[i].isFinal()) continue;
+			// http://home.thep.lu.se/~torbjorn/pythia81html/ParticleProperties.html
+			// 61 - 69 : particles produced by beam-remnant treatment
+			// 63 : outgoing beam remnant
+			if (pythia->event[i].status() >= 61 && pythia->event[i].status() <= 69)
+			{
+				v.push_back(i);
+			}
+		}
+		return v;
+	}
+
 	void cook_pythia_settings(Pythia8::Pythia *pythia)
 	{
 		auto &args = FJPyUtil::ArgParser::Instance();

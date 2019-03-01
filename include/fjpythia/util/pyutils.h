@@ -11,6 +11,8 @@ namespace Pythia8
 namespace PythiaUtils
 {
 	std::vector<int> find_outgoing_hard_electrons(Pythia8::Pythia *pythia);
+	std::vector<int> find_outgoing_beam_remnants(Pythia8::Pythia *pythia);
+
 	void cook_pythia_settings(Pythia8::Pythia *pythia);
 }
 
