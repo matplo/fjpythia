@@ -26,7 +26,7 @@ namespace PythiaUtils
 
 				// 91 - 99 : particles produced in decay process, or by Bose-Einstein effects
 				// 91 : normal decay products
-				if (pythia->event[i].status() != 91) // not from a decay
+				if (pythia->event[i].status() != 91 || pythia->event[i].status() == 63) // not from a decay or outgoing beam remnant
 				{
 					v.push_back(i);
 				}
