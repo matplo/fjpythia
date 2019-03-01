@@ -86,6 +86,7 @@ int fj_and_root()
 	double sjR = args.getOptDouble("--sjR", 0.1);
 	double minJetPt = args.getOptDouble("--minJetPt", 0.0);
 	double maxPartEta = std::abs(args.getOptDouble("--maxParticleEta", 20.));
+	bool requireD0 = args.isSet("--D0");
 
 	// dump some parameters of the analysis
 	cout << "[i] configuration: " << endl
@@ -94,6 +95,7 @@ int fj_and_root()
 		 << "    subjetR:       " << sjR << endl
 		 << "    minJetPt:      " << minJetPt << endl
 		 << "    maxPartEta:    " << maxPartEta << endl
+		 << "    require D0     " << requireD0 << endl
 		 << "    output:        " << foutname << endl;
 
 	fj::Selector partSelector = fastjet::SelectorAbsEtaMax(maxPartEta);
@@ -122,6 +124,7 @@ int fj_and_root()
 		}
 
 		// D-inv mass
+		bool D0present = false;
 		for (unsigned int ip = 0; ip < parts_selected.size(); ip++)
 		{
 			Pythia8::Particle *_pi = parts_selected[ip].user_info<FJUtils::PythiaUserInfo>().getParticle();
@@ -154,9 +157,11 @@ int fj_and_root()
 					int isfromD = int(from_mother_2body(pythia, _pi, 421) && from_mother_2body(pythia, _pj, 421));
 					tnD.Fill(pythia.info.code(), pythia.info.sigmaGen(),
 					         _D.Pt(), _D.Phi(), _D.Eta(), _D.M(), ptK, ptpi, etaK, etapi, isfromD);
+					if (isfromD) D0present = true;
 				}
 			}
 		}
+		if (requireD0 && !D0present) continue;
 
 		FJUtils::mask_momentum_of(hard_electron_indexes, parts_selected);
 		FJUtils::mask_momentum_of(beam_remnant_indexes, parts_selected);
