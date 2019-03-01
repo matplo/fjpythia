@@ -41,6 +41,8 @@ int fj_and_root()
 	TNtuple tnp("tnp", "tnp", "procid:xsec:pt:phi:eta:m:pid:status");
 	// jets
 	TNtuple tnj("tnj", "tnj", "procid:xsec:pt:phi:eta:lpt:lpid:lstatus:sdpt:sdphi:sdeta:sdDR:zg:sdmu");
+	// sub_jets
+	TNtuple tnsj("tnsj", "tnsj", "procid:xsec:pt:phi:eta:ptsj:z");
 
 	// intialize PYTHIA
 	Pythia pythia;
@@ -53,7 +55,8 @@ int fj_and_root()
 
 	// generate and analyze events
 	int nEv = args.getOptInt("--nev", 1); // default will be 1 event(!)
-	double jetR = args.getOptDouble("--jetR", 0.4);
+	double jetR = args.getOptDouble("--jetR", 0.7);
+	double sjR = args.getOptDouble("--sjR", 0.1);
 	double minJetPt = args.getOptDouble("--minJetPt", 0.0);
 	double maxPartEta = std::abs(args.getOptDouble("--maxParticleEta", 20.));
 
@@ -61,6 +64,7 @@ int fj_and_root()
 	cout << "[i] configuration: " << endl
 		 << "    events:        " << nEv << endl
 		 << "    jetR:          " << jetR << endl
+		 << "    subjetR:       " << sjR << endl
 		 << "    minJetPt:      " << minJetPt << endl
 		 << "    maxPartEta:    " << maxPartEta << endl
 		 << "    output:        " << foutname << endl;
@@ -81,6 +85,7 @@ int fj_and_root()
 
 		// get the beam scattered electrons
 		auto hard_electron_indexes = PythiaUtils::find_outgoing_hard_electrons(&pythia);
+		auto beam_remnant_indexes = PythiaUtils::find_outgoing_hard_electrons(&pythia);
 
 		for (auto &psj : parts_selected)
 		{
@@ -90,6 +95,7 @@ int fj_and_root()
 		}
 
 		FJUtils::mask_momentum_of(hard_electron_indexes, parts_selected);
+		FJUtils::mask_momentum_of(beam_remnant_indexes, parts_selected);
 
 		// run jet finding
 		fj::JetDefinition jet_def(fj::antikt_algorithm, jetR);
@@ -107,6 +113,7 @@ int fj_and_root()
 		for (unsigned int ij = 0; ij < jets.size(); ij++)
 		{
 			hjetpt.Fill(jets[ij].perp());
+
 			if (jets[ij].has_user_info<FJUtils::LundJetInfo>())
 			{
 				auto lsplits = jets[ij].user_info<FJUtils::LundJetInfo>();
@@ -124,6 +131,19 @@ int fj_and_root()
 			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().delta_R(),
 			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().symmetry(), // aka zg
 			         sdjets[ij].structure_of<fj::contrib::SoftDrop>().mu());
+
+			// subjets
+			// cout << "number of constituents: " << jets[ij].constituents().size() << endl;
+			fj::JetDefinition _sj_jet_def(fj::kt_algorithm, sjR);
+			fj::ClusterSequence _sj_ca(jets[ij].constituents(), _sj_jet_def);
+			std::vector<fj::PseudoJet> _sj = _sj_ca.inclusive_jets();
+			for (unsigned int isj = 0; isj < _sj.size(); isj++)
+			{
+				tnsj.Fill(pythia.info.code(), pythia.info.sigmaGen(),
+				          jets[ij].perp(), jets[ij].phi(), jets[ij].eta(),
+				          _sj[isj].perp(), _sj[isj].perp()/jets[ij].perp());
+			}
+
 		}
 	}
 	// write and close the output file
