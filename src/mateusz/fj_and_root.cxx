@@ -10,6 +10,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TNtuple.h>
+#include <TLorentzVector.h>
 
 #include <fastjet/Selector.hh>
 #include <fastjet/PseudoJet.hh>
@@ -24,6 +25,27 @@ using namespace Pythia8;
 
 namespace mateusz
 {
+
+bool from_mother(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
+{
+	return ((pythia.event[p->mother1()].id() == pid) || (pythia.event[p->mother2()].id() == pid));
+}
+
+bool from_mother_2body(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
+{
+	if (pythia.event[p->mother1()].id() == pid)
+	{
+		if (pythia.event[p->mother1()].daughterList().size() == 2)
+			return 1;
+	}
+	// if (pythia.event[p->mother2()].id() == pid)
+	// {
+	// 	if (pythia.event[p->mother2()].daughterList().size() == 2)
+	// 		return 1;
+	// }
+	return 0;
+}
+
 int fj_and_root()
 {
 	auto &args = FJPyUtil::ArgParser::Instance();
@@ -43,6 +65,11 @@ int fj_and_root()
 	TNtuple tnj("tnj", "tnj", "procid:xsec:pt:phi:eta:lpt:lpid:lstatus:sdpt:sdphi:sdeta:sdDR:zg:sdmu");
 	// sub_jets
 	TNtuple tnsj("tnsj", "tnsj", "procid:xsec:pt:phi:eta:ptsj:z");
+	// hadrons in jets
+	TNtuple tnsh("tnsh", "tnsh", "procid:xsec:pt:phi:eta:pth:z:pid:status");
+
+	TH1F hDmass("hDmass", "m_{K#pi} (GeV)", 100, 0, 10);
+	TNtuple tnD("tnD", "tnD", "procid:xsec:pt:phi:eta:m:ptK:ptpi:etaK:etapi:fromD0");
 
 	// intialize PYTHIA
 	Pythia pythia;
@@ -92,6 +119,43 @@ int fj_and_root()
 			Pythia8::Particle *_p = psj.user_info<FJUtils::PythiaUserInfo>().getParticle();
 			tnp.Fill(pythia.info.code(), pythia.info.sigmaGen(),
 			         psj.perp(), psj.phi(), psj.eta(), _p->m(), _p->id(), _p->status());
+		}
+
+		// D-inv mass
+		for (unsigned int ip = 0; ip < parts_selected.size(); ip++)
+		{
+			Pythia8::Particle *_pi = parts_selected[ip].user_info<FJUtils::PythiaUserInfo>().getParticle();
+			for (unsigned int jp = ip + 1; jp < parts_selected.size(); jp++)
+			{
+				Pythia8::Particle *_pj = parts_selected[jp].user_info<FJUtils::PythiaUserInfo>().getParticle();
+				if ((std::abs(_pi->id()) == 321 && std::abs(_pj->id()) == 211) ||
+				    (std::abs(_pi->id()) == 211 && std::abs(_pj->id()) == 321))
+				{
+					TLorentzVector tlvpi;
+					tlvpi.SetPxPyPzE(_pi->px(), _pi->py(), _pi->pz(), _pi->e());
+					TLorentzVector tlvpj;
+					tlvpj.SetPxPyPzE(_pj->px(), _pj->py(), _pj->pz(), _pj->e());
+					TLorentzVector _D = tlvpi + tlvpj;
+					hDmass.Fill(_D.M());
+					//TNtuple tnD("tnD", "tnD", "procid:xsec:pt:phi:eta:m:ptK:ptpi:etaK:etapi");
+					double ptpi = tlvpi.Pt();
+					double etapi = tlvpi.Eta();
+					double ptK = tlvpj.Pt();
+					double etaK = tlvpj.Eta();
+					if (std::abs(_pi->id()) == 321)
+					{
+						// kaon is _pi
+						ptpi = tlvpj.Pt();
+						etapi = tlvpj.Eta();
+						ptK = tlvpi.Pt();
+						etaK = tlvpi.Eta();
+					}
+					// int isfromD = int(from_mother(pythia, _pi, 421) && from_mother(pythia, _pj, 421));
+					int isfromD = int(from_mother_2body(pythia, _pi, 421) && from_mother_2body(pythia, _pj, 421));
+					tnD.Fill(pythia.info.code(), pythia.info.sigmaGen(),
+					         _D.Pt(), _D.Phi(), _D.Eta(), _D.M(), ptK, ptpi, etaK, etapi, isfromD);
+				}
+			}
 		}
 
 		FJUtils::mask_momentum_of(hard_electron_indexes, parts_selected);
@@ -144,6 +208,16 @@ int fj_and_root()
 				          _sj[isj].perp(), _sj[isj].perp()/jets[ij].perp());
 			}
 
+			// hadrons in jets
+			auto consts = jets[ij].constituents();
+			for (unsigned int ic = 0; ic < consts.size(); ic++)
+			{
+				Pythia8::Particle *_p = consts[ic].user_info<FJUtils::PythiaUserInfo>().getParticle();
+				tnsh.Fill(pythia.info.code(), pythia.info.sigmaGen(),
+				          jets[ij].perp(), jets[ij].phi(), jets[ij].eta(),
+				          consts[ic].perp(), consts[ic].perp()/jets[ij].perp(),
+				          _p->id(), _p->status());
+			}
 		}
 	}
 	// write and close the output file
