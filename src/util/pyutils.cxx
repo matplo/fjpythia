@@ -10,6 +10,28 @@ using namespace std;
 
 namespace PythiaUtils
 {
+	bool has_mother(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
+	{
+		bool retval = false;
+		int im2 = p->mother1();
+		if (p->mother2() > 0) im2 = p->mother2();
+		for (int im = p->mother1(); im <= im2; im++)
+		{
+			retval = retval || (pythia.event[im].id() == pid);
+		}
+		return retval;
+	}
+
+	bool is_from_mother_2body_decay(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
+	{
+		if (pythia.event[p->mother1()].id() == pid)
+		{
+			if (pythia.event[p->mother1()].daughterList().size() == 2)
+				return true;
+		}
+		return false;
+	}
+
 	std::vector<int> find_outgoing_hard_electrons(Pythia8::Pythia *pythia)
 	{
 		std::vector<int> v;
