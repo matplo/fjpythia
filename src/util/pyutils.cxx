@@ -77,6 +77,72 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
+		if (isSet("--hardQCDlf"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:gg2gg=on");
+			pythia->readString("HardQCD:qg2qg=on");
+			pythia->readString("HardQCD:qqbar2gg=on");
+			pythia->readString("HardQCD:gg2qqbar=on");
+			pythia->readString("HardQCD:qq2qq=on");
+			pythia->readString("HardQCD:qqbar2qqbarNew=on");
+
+			pythia->readString("HardQCD:hardccbar=off");
+			pythia->readString("HardQCD:hardbbbar=off");
+
+			args.addOpts("--pythia-process-configured");
+		}
+
+		if (isSet("--hardQCDcharm"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:hardccbar=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
+		if (isSet("--hardQCDbeauty"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:hardbbbar=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
+		if (isSet("--promptPhoton"))
+		{
+			pythia->readString("PromptPhoton:all=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
+
+		if (isSet("--hardQCDgluons"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:gg2gg=on");
+			pythia->readString("HardQCD:qg2qg=on");
+			pythia->readString("HardQCD:qqbar2gg=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
+		if (isSet("--hardQCDquarks"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:gg2qqbar=on");
+			pythia->readString("HardQCD:qq2qq=on");
+			pythia->readString("HardQCD:qqbar2qqbarNew=on");
+			pythia->readString("HardQCD:hardccbar=on");
+			pythia->readString("HardQCD:hardbbbar=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
+		if (isSet("--hardQCDuds"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:gg2qqbar=on");
+			pythia->readString("HardQCD:qq2qq=on");
+			pythia->readString("HardQCD:qqbar2qqbarNew=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
 		if (args.isSet("--eic-dis") or args.isSet("--eic-lowQ2") or
 		    args.isSet("--eic-cgamma") or args.isSet("--eic-bgamma") or args.isSet("--eic-qgamma") or
 		    args.isSet("--eic-test"))
