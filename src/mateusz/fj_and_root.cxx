@@ -26,26 +26,6 @@ using namespace Pythia8;
 namespace mateusz
 {
 
-bool from_mother(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
-{
-	return ((pythia.event[p->mother1()].id() == pid) || (pythia.event[p->mother2()].id() == pid));
-}
-
-bool from_mother_2body(const Pythia8::Pythia &pythia, Pythia8::Particle *p, int pid)
-{
-	if (pythia.event[p->mother1()].id() == pid)
-	{
-		if (pythia.event[p->mother1()].daughterList().size() == 2)
-			return 1;
-	}
-	// if (pythia.event[p->mother2()].id() == pid)
-	// {
-	// 	if (pythia.event[p->mother2()].daughterList().size() == 2)
-	// 		return 1;
-	// }
-	return 0;
-}
-
 int fj_and_root()
 {
 	auto &args = FJPyUtil::ArgParser::Instance();
@@ -153,8 +133,8 @@ int fj_and_root()
 						ptK = tlvpi.Pt();
 						etaK = tlvpi.Eta();
 					}
-					// int isfromD = int(from_mother(pythia, _pi, 421) && from_mother(pythia, _pj, 421));
-					int isfromD = int(from_mother_2body(pythia, _pi, 421) && from_mother_2body(pythia, _pj, 421));
+					int isfromD = int(PythiaUtils::is_from_mother_2body_decay(pythia, _pi, 421) &&
+					                  PythiaUtils::is_from_mother_2body_decay(pythia, _pj, 421));
 					tnD.Fill(pythia.info.code(), pythia.info.sigmaGen(),
 					         _D.Pt(), _D.Phi(), _D.Eta(), _D.M(), ptK, ptpi, etaK, etapi, isfromD);
 					if (isfromD) D0present = true;
