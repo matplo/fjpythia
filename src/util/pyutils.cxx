@@ -77,7 +77,7 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--hardQCDlf"))
+		if (args.isSet("--hardQCDlf"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:gg2gg=on");
@@ -93,28 +93,28 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--hardQCDcharm"))
+		if (args.isSet("--hardQCDcharm"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:hardccbar=on");
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--hardQCDbeauty"))
+		if (args.isSet("--hardQCDbeauty"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:hardbbbar=on");
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--promptPhoton"))
+		if (args.isSet("--promptPhoton"))
 		{
 			pythia->readString("PromptPhoton:all=on");
 			args.addOpts("--pythia-process-configured");
 		}
 
 
-		if (isSet("--hardQCDgluons"))
+		if (args.isSet("--hardQCDgluons"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:gg2gg=on");
@@ -123,7 +123,7 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--hardQCDquarks"))
+		if (args.isSet("--hardQCDquarks"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:gg2qqbar=on");
@@ -134,7 +134,7 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
-		if (isSet("--hardQCDuds"))
+		if (args.isSet("--hardQCDuds"))
 		{
 			pythia->readString("HardQCD:all=off");
 			pythia->readString("HardQCD:gg2qqbar=on");
