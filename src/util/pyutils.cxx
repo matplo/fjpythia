@@ -129,6 +129,14 @@ namespace PythiaUtils
 			args.addOpts("--pythia-process-configured");
 		}
 
+		if (args.isSet("--hardQCDhf"))
+		{
+			pythia->readString("HardQCD:all=off");
+			pythia->readString("HardQCD:hardccbar=on");
+			pythia->readString("HardQCD:hardbbbar=on");
+			args.addOpts("--pythia-process-configured");
+		}
+
 		if (args.isSet("--promptPhoton"))
 		{
 			pythia->readString("PromptPhoton:all=on");
