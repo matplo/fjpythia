@@ -8,6 +8,6 @@ minimalistic setup for fastjet and pythia
 
 - to install fastjet 3: `./scripts/install_fastjet3.sh`
    - note, the tests on contributed algos are disabled - enable/run `make check`
-- to install pythia8: `./scripts/pythia8_setup.sh`
+- to install pythia8: `./scripts/install_pythia8.sh`
 - build: `./scripts/build.sh`
 - run an example: `./scripts/run.sh`
