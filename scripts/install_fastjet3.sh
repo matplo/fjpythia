@@ -93,7 +93,7 @@ fi
 
 if [ -d ${fastjet_contrib_src_dir} ]; then
         cd ${fastjet_contrib_src_dir}
-        ./configure --fastjet-config=${fastjet_installation_directory}/bin/fastjet-config
+        ./configure --fastjet-config=${fastjet_installation_directory}/bin/fastjet-config CXXFLAGS="-fPIC" CFLAGS="-fPIC"
         # make -j && make check && make install
         make -j && make install
 else
