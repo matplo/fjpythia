@@ -35,4 +35,4 @@ export PATH=${PATH}:${FJPYTHIADIR}/install/bin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${FJPYTHIADIR}/install/lib
 export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${FJPYTHIADIR}/install/lib
 
-fjpythia_youqi_exe --eic-dis $@
+fjpythia_youqi_exe --eic-dis --fjroot $@

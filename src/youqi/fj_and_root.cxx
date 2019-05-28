@@ -30,8 +30,9 @@ int fj_and_root()
 
 	// open an output file
 	std::string foutname = args.getOpt("--out", "default_output.root");
+	cout << "[i] output file name: " << foutname << endl;
 	TFile fout(foutname.c_str(), "recreate");
-    fout.cd();
+	fout.cd();
         // book histograms
         TH1F h_Q("h_Q", "Q [GeV]", 100, 0., 50.);
         TH1F h_W("h_W", "W [GeV]", 100, 0., 140.);
