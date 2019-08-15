@@ -38,14 +38,21 @@ export FJPYTHIADIR="${this_file_directory}/.."
 
 installed_bin_dir="${this_file_directory}/../install/bin"
 installed_lib_dir="${this_file_directory}/../install/lib"
+installed_lib64_dir="${this_file_directory}/../install/lib64"
 if [ -d ${installed_bin_dir} ]; then
         if [[ ":$PATH:" == *":${installed_bin_dir}:"* ]]; then
                 echo "Your path already contains ${installed_bin_dir}"
         else
                 # echo "Your path is missing ${installed_bin_dir}"
                 export PATH=${PATH}:${installed_bin_dir}
-                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${installed_lib_dir}
-                export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${installed_lib_dir}
+                if [ -d ${installed_lib_dir} ]; then 
+                        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${installed_lib_dir}
+                        export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${installed_lib_dir}
+                fi
+                if [ -d ${installed_lib64_dir} ]; then
+                        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${installed_lib64_dir}
+                        export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${installed_lib64_dir}
+                fi                
         fi
 fi
 
